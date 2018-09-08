@@ -3,6 +3,7 @@ package com.example.demo;
 import com.example.demo.core.Person;
 import com.example.demo.core.ProgrammerRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,25 +17,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//@WebFluxTest
 public class ProgrammerControllerTests {
 
     @Autowired
     private ApplicationContext applicationContext;
 
-    //@Autowired
+    @Autowired
     private WebTestClient webTestClient;
 
     @Autowired
     private ProgrammerRepository programmerRepository;
 
     @BeforeEach
-    public void 데이터_초기화(){
-        webTestClient = WebTestClient.bindToApplicationContext(applicationContext).configureClient().build();
+    @DisplayName("테스트 데이터 초기화")
+    public void init(){
+        //webTestClient = WebTestClient.bindToApplicationContext(applicationContext).configureClient().build();
         programmerRepository.put(new Person("eddy", 1981));
     }
 
     @Test
-    public void 정상적으로_응답하는가(){
+    @DisplayName("이름 검색 응답 테스트")
+    public void programmerResonseTest(){
 
         Person person = webTestClient.get().uri("/programmers/eddy").exchange()
                 .expectStatus().isOk()
@@ -45,5 +49,4 @@ public class ProgrammerControllerTests {
         assertEquals(person.getBorn().intValue(), 1981);
 
     }
-
 }
